@@ -1,5 +1,7 @@
 // backend/src/controllers/todoController.js
-const Todo = require("../models/Todo");
+const {Todomania, Todomania2} = require("../models/Todo");
+const newTodo = new Todomania({ title: "Task 1" });
+const newTodo2 = new Todomania2({ title: "Task 2" });
 
 // @desc Create a new todo
 const createTodo = async (req, res) => {
