@@ -4,11 +4,10 @@ const todoRoutes = require("./routes/todoRoutes");
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// Mount routes
 app.use("/", todoRoutes);
 
 module.exports = app;

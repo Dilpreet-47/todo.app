@@ -1,29 +1,18 @@
 const mongoose = require("mongoose");
 
+// Define schema for tasks
 const todoSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true,
-    },
-    completed: {
-        type: Boolean,
-        default: false,
-    },
+  title: {
+    type: String,
+    required: true,
+  },
+  completed: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const todoSchema2 = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true,
-    },
-    completed: {
-        type: Boolean,
-        default: false,
-    },
-});
+// Create one model (collection will be `todos` in MongoDB)
+const Todo = mongoose.model("Todo", todoSchema);
 
-// Export both models
-const Todomania = mongoose.model("Todomania", todoSchema);
-const Todomania2 = mongoose.model("Todomania2", todoSchema2);
-
-module.exports = { Todomania, Todomania2 };
+module.exports = Todo;
