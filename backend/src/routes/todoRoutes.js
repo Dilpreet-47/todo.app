@@ -4,7 +4,10 @@ const router = express.Router();
 const Todo = require("../models/Todo");
 
 // test route: add a todo
-router.get("/test", async (req, res) => {
+router.get("/", async (req,res)=>{
+  res.send("server is running");
+});
+router.get("/todo", async (req, res) => {
   try {
     const todo = new Todo({ title: "First Todo" });
     await todo.save();
