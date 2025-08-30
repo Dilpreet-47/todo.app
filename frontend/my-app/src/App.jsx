@@ -13,7 +13,6 @@ const App = () => {
       } catch (error) {
         console.error("Error fetching tasks", error);
       }
-
     };
     fetchTodo();
   }, []);
@@ -34,13 +33,30 @@ const App = () => {
         throw new Error("Failed to add task");
       }
 
-      const data = await response.json();
-      console.log("Task added:", data);
+      const data = await response.json(); 
+      settasks(prev => [...prev, data]);
+      // console.log("Task added:", data);
       settask("");
     } catch (error) {
       console.error("Error adding task", error);
     }
   };
+
+  const handledeleteTask = async (id) => {
+    try{
+      const response = await fetch(`http://localhost:5000/todo/${id}`, {
+        method : "DELETE",
+      });
+
+      if(!response.ok){
+        throw new Error("Failed to delete task");
+      }
+      // settasks(tasks.filter((t) => t._id != id));
+      settasks(prev => prev.filter(t => t._id != id));
+    }catch(error){
+      console.error("Error deleting task", error);
+    }
+  }
 
   return (
     <div className="flex h-screen w-screen p-3 bg-amber-100 flex-col gap-4">
@@ -77,6 +93,9 @@ const App = () => {
               <span className={t.completed ? "line-through text-gray-500" : ""}>
                 {t.title}
               </span>
+              <button className="bg-red-600 rounded-full px-4 py-2 text-white" onClick={() => handledeleteTask(t._id)}>
+                Delete
+              </button>
             </div>
           ))
         )}

@@ -1,24 +1,22 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const App = () => {
   const [task, setTask] = useState("");
-  const [tasks, setTasks] = useState([]); // 👈 store all tasks
-// Fetch tasks when app loads
+  const [tasks, setTasks] = useState([]);
+
   useEffect(() => {
-    const fetchTasks = async () => {
+    const fetchTodo = async () => {
       try {
         const response = await fetch("http://localhost:5000/todo");
-        const data = await response.json();     
-        setTasks(data); // set fetched tasks
+        const data = await response.json();
+        setTasks(data);
       } catch (error) {
-        console.error("Error fetching tasks:", error);
+        console.error("Error fetching tasks", error);
       }
-
     };
-    fetchTasks();
+    fetchTodo();
   }, []);
 
-  // Add a new task
   const handleAddTask = async () => {
     if (!task.trim()) return;
 
@@ -34,12 +32,28 @@ const App = () => {
       }
 
       const newTask = await response.json();
-
-      // Add new task to state so UI updates immediately
-      setTasks([...tasks, newTask]);
+      // ✅ update UI immediately
+      setTasks(prev => [...prev, newTask]); 
       setTask("");
     } catch (error) {
-      console.error("Error adding task:", error);
+      console.error("Error adding task", error);
+    }
+  };
+
+  const handleDeleteTask = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:5000/todo/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete task");
+      }
+
+      // ✅ remove from state using functional update + strict compare
+      setTasks(prev => prev.filter(t => t._id !== id));
+    } catch (error) {
+      console.error("Error deleting task", error);
     }
   };
 
@@ -47,33 +61,46 @@ const App = () => {
     <div className="flex h-screen w-screen p-3 bg-amber-100 flex-col gap-4">
       <h1 className="text-5xl">ToDo App</h1>
 
-      {/* Input */}
       <input
-        className="flex bg-white border border-blue-300 text-2xl p-2"
+        className="flex bg-white w-screen border border-blue-300 text-2xl p-2 rounded"
         type="text"
         value={task}
         onChange={(e) => setTask(e.target.value)}
+        placeholder="Add a task…"
       />
 
-      {/* Add Button */}
       <button
-        className="p-3 rounded-full border-black bg-amber-600 w-32"
+        className="flex p-3 justify-center items-center rounded-full h-10 w-32 border bg-amber-600 text-white"
         onClick={handleAddTask}
       >
         Add task
       </button>
 
-      {/* Show Tasks */}
-      <div className="flex flex-col gap-2 mt-4">
+      <h2 className="text-3xl">Viewable tasks</h2>
+
+      <div className="flex flex-col gap-2 mt-2">
         {tasks.length === 0 ? (
           <p className="text-gray-600">No tasks yet</p>
         ) : (
           tasks.map((t) => (
             <div
               key={t._id}
-              className="p-2 bg-white rounded shadow flex items-center"
+              className="flex items-center justify-between bg-amber-50 p-2 rounded"
             >
-              {t.title}
+              <div className="flex items-center gap-2">
+                {/* Checkbox is read-only for now */}
+                <input type="checkbox" checked={t.completed} readOnly />
+                <span className={t.completed ? "line-through text-gray-500" : ""}>
+                  {t.title}
+                </span>
+              </div>
+
+              <button
+                className="bg-red-600 rounded px-3 py-1 text-white"
+                onClick={() => handleDeleteTask(t._id)}  // ✅ correct handler
+              >
+                Delete
+              </button>
             </div>
           ))
         )}
