@@ -33,7 +33,7 @@ const App = () => {
         throw new Error("Failed to add task");
       }
 
-      const data = await response.json(); 
+      const data = await response.json();
       settasks(prev => [...prev, data]);
       // console.log("Task added:", data);
       settask("");
@@ -43,18 +43,34 @@ const App = () => {
   };
 
   const handledeleteTask = async (id) => {
-    try{
+    try {
       const response = await fetch(`http://localhost:5000/todo/${id}`, {
-        method : "DELETE",
+        method: "DELETE",
       });
 
-      if(!response.ok){
+      if (!response.ok) {
         throw new Error("Failed to delete task");
       }
       // settasks(tasks.filter((t) => t._id != id));
       settasks(prev => prev.filter(t => t._id != id));
-    }catch(error){
+    } catch (error) {
       console.error("Error deleting task", error);
+    }
+  }
+
+  const handleedittask = async (id) => {
+    try {
+      const response = await fatch(`http://localhost:5000/todo/${id}`, {
+        method: "UPDATE",
+      });
+
+      if(!response.ok){
+        throw new Error("Failed to edit task");
+      }
+
+
+    }catch{
+
     }
   }
 
@@ -82,20 +98,30 @@ const App = () => {
           tasks.map((t) => (
             <div
               key={t._id}
-              className="flex items-center gap-2 bg-amber-50 p-2 rounded"
+              className="flex items-center gap-2 bg-amber-50 p-2 rounded  justify-between"
             >
               {/* Checkbox for completed */}
-              <input
-                type="checkbox"
-                checked={t.completed} // show true/false // temporary (we’ll make it updatable later)
-              />
-              {/* Task title */}
-              <span className={t.completed ? "line-through text-gray-500" : ""}>
-                {t.title}
-              </span>
-              <button className="bg-red-600 rounded-full px-4 py-2 text-white" onClick={() => handledeleteTask(t._id)}>
-                Delete
-              </button>
+              <div className="flex gap-3">
+                <input
+                  type="checkbox"
+                  checked={t.completed} // show true/false // temporary (we’ll make it updatable later)
+                />
+                {/* Task title */}
+                <span className={t.completed ? "line-through text-gray-500" : ""}>
+                  {t.title}
+                </span>
+              </div>
+
+              <div className="flex gap-5 ">
+                <button className="bg-blue-500 rounded-full px-4 py-2 text-white" onClick={() => handleedittask(t._id)}>
+                  Edit
+                </button>
+
+                <button className="bg-red-600 rounded-full px-4 py-2 text-white" onClick={() => handledeleteTask(t._id)}>
+                  Delete
+                </button>
+              </div>
+
             </div>
           ))
         )}
